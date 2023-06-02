@@ -74,7 +74,7 @@ export class SimpleScheduler {
 
             allBlocked = false;
 
-            proc.update();
+            proc.updateAsync();
 
             const { route } = template.config;
 

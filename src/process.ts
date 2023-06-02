@@ -283,7 +283,12 @@ export class Process<In, Out, Args extends any[], Ret> {
         }
     }
 
-    update(): void {
+    async update(): Promise<void> {
+        await this.wait();
+        this._update();
+    }
+
+    updateAsync(): void {
         if (this._generator === undefined) {
             throw Error('process not started');
         }
