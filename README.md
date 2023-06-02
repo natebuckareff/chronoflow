@@ -185,6 +185,39 @@ In the console we'll see that the processes are running and receiving messages f
 1> i=4 received hello from 0
 ```
 
+## Usage With Fetch
+
+```ts
+import { fetch } from 'undici';
+import type { ProcessParams } from './process.js';
+import { template } from './template.js';
+
+const Fetcher = template<ProcessParams<number, unknown>>()({
+    *entrypoint(self) {
+        while (true) {
+            const id = self.receive(yield);
+            const url = `https://swapi.dev/api/people/${id}`;
+
+            const response = self.use(fetch, url).await(yield);
+            const json = self.use(() => response.json()).await(yield);
+
+            console.log(json);
+        }
+    },
+});
+
+const fetcher = Fetcher.create(0);
+
+fetcher.start();
+fetcher.pushAsync(1);
+fetcher.pushAsync(2);
+fetcher.pushAsync(3);
+
+while (!fetcher.stopped) {
+    await fetcher.update();
+}
+```
+
 ## Selecting and Filtering Messages
 
 `select()` waits until the process receives a message that matches the predicate function. Any non-matching messages received while waiting are pushed to the inbox.
