@@ -1,0 +1,38 @@
+{
+    "name": "chronoflow",
+    "version": "0.0.0",
+    "description": "Message passing process for TypeScript.",
+    "author": "Nate Buckareff",
+    "license": "MIT",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/natebuckareff/chronoflow"
+    },
+    "private": true,
+    "engines": {
+        "node": ">=18.0.0",
+        "pnpm": ">=8.0.0"
+    },
+    "type": "module",
+    "main": "dist/index.js",
+    "module": "dist/index.js",
+    "types": "dist/index.d.ts",
+    "files": [
+        "dist"
+    ],
+    "scripts": {
+        "dev": "tsc-watch -b --onSuccess \"node --enable-source-maps ./dist/examples.js\"",
+        "build": "tsc",
+        "test": "vitest -t src/**/*.ts",
+        "typeck": "tsc --noEmit"
+    },
+    "devDependencies": {
+        "@tsconfig/esm": "^1.0.3",
+        "@tsconfig/node18": "^2.0.1",
+        "@tsconfig/strictest": "^2.0.1",
+        "@types/node": "^20.2.5",
+        "tsc-watch": "^6.0.4",
+        "typescript": "^5.1.3",
+        "vitest": "^0.31.4"
+    }
+}

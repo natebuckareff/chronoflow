@@ -1,0 +1,15 @@
+{
+    "extends": [
+        "@tsconfig/node18/tsconfig.json",
+        "@tsconfig/esm/tsconfig.json",
+        "@tsconfig/strictest/tsconfig.json"
+    ],
+    "compilerOptions": {
+        "sourceMap": true,
+        "declaration": true,
+        "types": ["vitest/importMeta"],
+        "outDir": "dist"
+    },
+    "include": ["src/**/*.ts"],
+    "exclude": ["node_modules", "dist"]
+}
