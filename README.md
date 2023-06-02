@@ -6,9 +6,9 @@ Message passing processes for TypeScript.
 
 > 🚧 This library is experimental and being actively worked. Expect it to change.
 
-Choroflow is a runtime for scheduling Erlang-style message passing processes in TypeScript. The original use case was a lightweight alternative to [Temporal.io](https://temporal.io/) for single-node applications.
+Chronoflow is a runtime for scheduling Erlang-style message passing processes in TypeScript. The original use case was a lightweight alternative to [Temporal.io](https://temporal.io/) for single-node applications.
 
-## Inpiration
+## Inspiration
 
 - [Erlang][1]
 - [Temporal.io][2]
@@ -62,7 +62,7 @@ const Greeter = template<ProcessParams<string, string>>()({
         for (let i = 0; i < count; ++i) {
             const name = self.receive(yield);
 
-            console.log('recevied', name);
+            console.log('received', name);
 
             self.send(`greeting #${i}: Hello ${name}!`);
         }
@@ -82,7 +82,7 @@ The new process isn't started yet so we'll get an error if we try using it. To s
 proc.start();
 ```
 
-> If [replaying](#replay) the process using signals we saved from a previous run, we'd call `replay()` instead of `start()`.
+> If [replaying](#replaying-signals) the process using signals we saved from a previous run, we'd call `replay()` instead of `start()`.
 
 Now we can interact with the generator function defined in the template. To push a message to the process's inbox and let it run call `push()`.
 
@@ -142,7 +142,7 @@ const Echo = template<ProcessParams<Message, Message>>()({
 
 The `Echo` process waits for a message, sends one back to the sender, and then waits for 1 second. Since process generator functions are not async generators we call `use()` and then `.await(yield)` to wait for the promise to resolve.
 
-> If process generator functions were async then a `Promise` object would be created every time we yeild, even if we're just yielding a non-promise value. In the future, Choroflow may support async generators, but for now the `use(...).await(yield)` pattern is the only way to resolve a promise from within a process.
+> If process generator functions were async then a `Promise` object would be created every time we yeild, even if we're just yielding a non-promise value. In the future, Chronoflow may support async generators, but for now the `use(...).await(yield)` pattern is the only way to resolve a promise from within a process.
 
 Next, create a new scheduler and spawn two processes.
 
@@ -187,10 +187,9 @@ In the console we'll see that the processes are running and receiving messages f
 
 ## Selecting and Filtering Messages
 
-`select()` waits until the process receives a message matching the predicate function. Any messages received while waiting are pushed to the inbox.
+`select()` waits until the process receives a message that matches the predicate function. Any non-matching messages received while waiting are pushed to the inbox.
 
-`filter()` waits until the process receives a message matching the predicate, but any messages received that don't match are dropped. The `DROP` signal is emitted for each message that is dropped by a filtering process.
-
+`filter()` also waits until the process receives a message matching the predicate, but any messages received that don't match are dropped. The `DROP` signal is emitted for each dropped message.
 
 ```ts
 interface ServerReq {
@@ -290,7 +289,7 @@ await parent.push('msg3');
 await parent.push('msg4');
 ```
 
-Child processes will receive all messages that their parent process receives from the moment after they are spawned. If there are unprocessed messages in the parent's inbox, then those will also be received by the child processes.
+Child processes will receive all messages that their parent process receives from the moment after they are spawned. If there are unprocessed messages in the parent's inbox when they are spawned, then those will also be received by the child.
 
 Child processes cannot outlive their parent.
 
@@ -363,6 +362,6 @@ The process will emit a `TRANSITION` signal before starting the new generator. W
 | `TRANSITION` | Process returned a `Transition` object.                |
 | `USE`        | Process called `use()` on a promise factory.           |
 | `SEND`       | Process called `send()`.                               |
-| `STOP`       | Process exited.                                        |
+| `STOP`       | Process generator is finished.                         |
 | `BACKOFF`    | Process inbox is full.                                 |
 | `DROP`       | Message was rejected by a filter.                      |
